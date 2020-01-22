@@ -18,7 +18,8 @@ RUN apt-get install -y --no-install-suggests --no-install-recommends \
     gcc \
     g++ \
     build-essential \
-    sudo
+    sudo \
+    postgresql-client
 
 RUN apt-get install curl
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -60,5 +61,5 @@ WORKDIR /home/frappe/frappe-bench
 RUN bench setup socketio
 RUN bench setup requirements
 
-WORKDIR /home/frappe/frappe-bench/sites
+WORKDIR /home/frappe/frappe-bench
 CMD ["/bin/sh"]

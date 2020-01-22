@@ -24,3 +24,6 @@ docker-compose build --build-arg FRAPPE_PATH=https://github.com/zerodhatech/frap
 
 ## Create site
 Create new-site
+```
+bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password root
+```
