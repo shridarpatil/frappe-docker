@@ -1,0 +1,99 @@
+version: '3'
+
+services:
+    buid-app:
+      image: shridh0r/frappe:ubuntu-zero_v12
+      build:
+        context: .
+        dockerfile: ./Dockerfile
+
+    web-app:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        ports:
+            - "8005:8000"
+        restart: unless-stopped
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+          - ./sites/site1.local:/home/frappe/frappe-bench/sites/site1.local
+          - ./sites/apps.txt:/home/frappe/frappe-bench/sites/apps.txt
+          - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
+        depends_on:
+          - redis
+          - postgres
+            # command: /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 4 --threads 4 -t 120 frappe.app:application --preload
+        # command: sh -c "cd /home/frappe/frappe-bench && ./env/bin/pip install -e apps/sirius && /home/frappe/.local/bin/bench start"
+        # command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench start"
+        command: sh -c "cd /home/frappe/frappe-bench/sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload"
+        # command: "/bin/bash"
+
+    default-worker:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        restart: unless-stopped
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue default"
+        depends_on:
+          - web-app
+
+    long-worker:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        restart: unless-stopped
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue long"
+        depends_on:
+          - web-app
+
+    short-worker:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        restart: unless-stopped
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue short"
+        depends_on:
+          - web-app
+
+    scheduler:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        restart: unless-stopped
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench schedule"
+        depends_on:
+          - web-app
+
+    socketio:
+        image: shridh0r/frappe:ubuntu-zero_v12
+        restart: unless-stopped
+        ports:
+            - "9000:9000"
+        volumes:
+          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+        command: sh -c "cd /home/frappe/frappe-bench && /usr/bin/node /home/frappe/frappe-bench/apps/frappe/socketio.js"
+        depends_on:
+          - web-app
+
+    redis:
+        image: "redis:5.0.5-alpine"
+        ports:
+          - 6379
+        volumes:
+          - ./data/redis:/data
+
+    postgres:
+        image: "postgres"
+        ports:
+          - 5432
+        volumes:
+          - ./data/postgres:/var/lib/postgresql/data
+
+    nginx:
+        image: nginx
+        ports:
+          - "80:80"
+        volumes:
+          - ./nginx.conf:/etc/nginx/nginx.conf
+          - ./sites/assets:/var/www/assets
+        depends_on:
+          - web-app
+

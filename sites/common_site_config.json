@@ -1,0 +1,19 @@
+{
+ "auto_update": false,
+ "background_workers": 1,
+ "db_host": "postgres",
+ "file_watcher_port": 6787,
+ "frappe_user": "frappe",
+ "gunicorn_workers": 8,
+ "rebase_on_pull": false,
+ "redis_cache": "redis://redis:6379/1",
+ "redis_queue": "redis://redis:6379/2",
+ "redis_socketio": "redis://redis:6379/3",
+ "restart_supervisor_on_update": false,
+ "restart_systemd_on_update": false,
+ "serve_default_site": true,
+ "shallow_clone": true,
+ "socketio_port": 9000,
+ "update_bench_on_update": true,
+ "webserver_port": 8000
+}
