@@ -1,21 +1,23 @@
 # frappe-docker
 Dockerizing frappe for production
 
-- ## Insatll <a href="http://recordit.co/" target="_blank">**Docker**</a>. 
-- ## Clone 
+Prerequisites
+- ## Instqll <a href="http://recordit.co/" target="_blank">**Docker**</a>. 
+
+## Clone 
 ```git@github.com:shridarpatil/frappe-docker.git```
 
-- ## Pull docker image
+## Pull docker image
 docker pull shridh0r/frappe:\<tagname\>
 
-- ## Run
+## Run
 ```docker-compose up```
 
-- ## Build
+## Build
 Docker compose buld by default pull frappe master branch </br>
 ``` docker-compose build ```
 
-- #### Build args
+#### Build args
   - [x] FRAPPE_PATH - Frappe repo path  
   - [x] FRAPPE_BRANCH - Branch name
   - [x] FRAPPE_PYTHON - Python version
@@ -28,10 +30,10 @@ Set frappe-path/branch dynamically by passing build-arg
 docker-compose build --build-arg FRAPPE_PATH=https://github.com/zerodhatech/frappe.git --build-arg FRAPPE_BRANCH=zero_v12
 ```
 
-- ## Run
+## Run
 ```docker-compose up```
 
-- ## Create site
+## Create site
 Exec into docker container and create new site
 
 Create new-site
