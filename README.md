@@ -14,7 +14,7 @@ docker pull shridh0r/frappe:\<tagname\>
 ```docker-compose up```
 
 ## Build
-Docker compose buld by default pull frappe master branch </br>
+Docker compose build by default pull's frappe master branch </br>
 ``` docker-compose build ```
 
 #### Build args
