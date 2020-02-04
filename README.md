@@ -56,7 +56,7 @@ Now each one of these can be run as a seperate docker container or can be run lo
 
 As we decided that they too have to be dockerized as individual containers, our docker-compose file reflects the same.
 
-Now according to the address of each of these, `common_site_config.json` of the site has to be updated. In case each of them is dockerized, the `common_site_config.json` in general should looks like below
+Now according to the address of each of these, `common_site_config.json` of the site has to be updated. In case each of them is dockerized, the `common_site_config.json` in general should look like below
 
 ```{
  "auto_update": false,
@@ -79,4 +79,4 @@ Now according to the address of each of these, `common_site_config.json` of the 
 }
 ```
 
-Here we are just mentioning service names for database and redis, the actual IP address is handled by docker-compose since it internally does the magic, DNS resolution of the service name.
+Here we are just using service names for database and redis, the actual IP address is handled by docker-compose since it internally does the magic, DNS resolution of the service name.
