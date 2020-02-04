@@ -7,7 +7,7 @@ ENV LANGUAGE=C.UTF-8
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-
+RUN apt-get update
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
     git \
     nodejs \
@@ -58,8 +58,7 @@ ARG CACHE
 RUN /bin/sh ./start_up.sh build
 #bench setup socketio
 WORKDIR /home/frappe/frappe-bench
-RUN bench setup socketio
+#RUN bench setup socketio
 RUN bench setup requirements
-
-WORKDIR /home/frappe/frappe-bench
+COPY Procfile /home/frappe/frappe-bench
 CMD ["/bin/sh"]

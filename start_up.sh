@@ -30,7 +30,7 @@ build(){
     echo "====================== bench init =================================="
     echo "frappe $FRAPPE frappe-path $FRAPPE_PATH "
     export PATH=$PATH:~/.local/bin/
-    bench init $FRAPPE --frappe-path $FRAPPE_PATH --frappe-branch $FRAPPE_BRANCH  --python $FRAPPE_PYTHON --no-backups --no-auto-update --skip-redis-config-generation --skip-assets
+    bench init $FRAPPE --frappe-path $FRAPPE_PATH --frappe-branch $FRAPPE_BRANCH  --python $FRAPPE_PYTHON --no-backups --no-auto-update --skip-redis-config-generation --skip-assets --no-procfile
 
 }
 
