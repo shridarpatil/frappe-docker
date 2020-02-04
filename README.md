@@ -1,6 +1,14 @@
 # frappe-docker
 Dockerizing frappe for production
 
+## Clone 
+```git@github.com:shridarpatil/frappe-docker.git```
+
+## Pull docker image
+docker pull shridh0r/frappe:\<tagname\>
+
+## Run
+```docker-compose up```
 
 ## Build
 Docker compose buld by default pull frappe master branch </br>
@@ -23,6 +31,8 @@ docker-compose build --build-arg FRAPPE_PATH=https://github.com/zerodhatech/frap
 ```docker-compose up```
 
 ## Create site
+Exec into docker container and create new site
+
 Create new-site
 ```
 bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password root
