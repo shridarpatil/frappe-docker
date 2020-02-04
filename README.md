@@ -2,7 +2,7 @@
 Dockerizing frappe for production
 
 Prerequisites
-- ## Instqll <a href="http://recordit.co/" target="_blank">**Docker**</a>. 
+- ## Install <a href="http://recordit.co/" target="_blank">**Docker**</a>. 
 
 ## Clone 
 ```git@github.com:shridarpatil/frappe-docker.git```
