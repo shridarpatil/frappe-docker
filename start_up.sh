@@ -34,17 +34,4 @@ build(){
 
 }
 
-new_site(){
-    if [ "$DB_HOST" = "" ]; then
-        DB_HOST="172.17.0.1"
-    fi
-    if [ "$SITE_NAME" = "" ]; then
-        SITE_NAME="site1.local"
-    fi
-    echo "Set mariadb host " $DB_HOST
-    bench set-mariadb-host $DB_HOST
-    echo "New site" $DB_NAME
-    bench new-site $SITE_NAME --db-name $DB_NAME --mariadb-root-password $MYSQL_ROOT_PWD
-    bench use $SITE_NAME
-}
 "$@"
