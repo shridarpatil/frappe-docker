@@ -2,7 +2,7 @@
 
 Dockerizing frappe for production.
 
-### Prerequisites:
+### Prerequisite:
 
 - Install [Docker](https://docs.docker.com/install/)
 - Install [Docker Compose](https://docs.docker.com/compose/install/)
@@ -29,13 +29,19 @@ The image is also present at [Dockerhub](https://hub.docker.com/r/shridh0r/pytho
 
 ### Creating site
 
-The frappe container created from above will not have sites folder yet. Inorder to create a site, execute the startup script as `/bin/sh start_up.sh new_site <arguments>`.
+The frappe container created from above will have a sites folder but no site is created yet. Inorder to create a site check the example below.
 
-The idea here is sites folder in frappe setup is a one time task and should not be executed everytime the image is built.
+The idea here is creation of site in frappe setup is a one time task and should not be executed everytime the image is built.
 
-Hence the creation of site part is not included in actual Dockerfile but is seperated out into a script file which will have to be manually executed by getting inside the docker only once.
+Hence the creation of site part is not included in actual Dockerfile but has to be manually executed by getting inside the docker only once.
 
-e.g: `bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password <password>`
+e.g:
+
+    Step1: Get Inside docker.
+        docker exec -it <name of the container> /bin/sh
+
+    Step2: Create a site.
+        bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password <password>
 
 ### Build phase
 
@@ -56,7 +62,7 @@ Now each one of these can be run as a seperate docker container or can be run lo
 
 As we decided that they too have to be dockerized as individual containers, our docker-compose file reflects the same.
 
-Now according to the address of each of these, `common_site_config.json` of the site has to be updated. In case each of them is dockerized, the `common_site_config.json` in general should look like below
+Now according to the address of each of these, `common_site_config.json` of the site has to be updated. In case each of them is dockerized, the `common_site_config.json` in general should looks like below
 
 ```{
  "auto_update": false,
@@ -79,4 +85,4 @@ Now according to the address of each of these, `common_site_config.json` of the 
 }
 ```
 
-Here we are just using service names for database and redis, the actual IP address is handled by docker-compose since it internally does the magic, DNS resolution of the service name.
+Here we are just mentioning service names for database and redis, the actual IP address is handled by docker-compose since it internally does the magic, DNS resolution of the service name.
