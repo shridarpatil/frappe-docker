@@ -1,4 +1,4 @@
-FROM shridh0r/python-ubuntu:3.7
+FROM python:3.7.6-slim-buster
 MAINTAINER Shridhar <shridharpatil2792@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
     git \
     nodejs \
-    mysql-client \
+    default-libmysqlclient-dev \
     libssl-dev \
     wkhtmltopdf \
     curl \
@@ -19,9 +19,10 @@ RUN apt-get install -y --no-install-suggests --no-install-recommends \
     g++ \
     build-essential \
     sudo \
-    postgresql-client
+    postgresql-client \
+    curl \
+    gnupg
 
-RUN apt-get install curl
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
@@ -61,4 +62,5 @@ WORKDIR /home/frappe/frappe-bench
 #RUN bench setup socketio
 RUN bench setup requirements
 COPY Procfile /home/frappe/frappe-bench
+# CMD ["/home/frappe/frappe-bench/env/bin/gunicorn", "-b", "0.0.0.0:8000", "--workers", "8", "--threads", "4", "-t", "120", "frappe.app:application", "--preload"]
 CMD ["/bin/sh"]
