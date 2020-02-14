@@ -1,4 +1,6 @@
-FROM python:3.7.6-slim-buster
+ARG BASE_IMAGE=3.7.6-slim-buster
+FROM python:$BASE_IMAGE
+
 MAINTAINER Shridhar <shridharpatil2792@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
