@@ -8,11 +8,17 @@ Prerequisites
 ```git@github.com:shridarpatil/frappe-docker.git```
 
 ## Pull docker image
-docker pull shridh0r/frappe:\<tagname\>
+```docker pull shridh0r/frappe:\<tagname\>```
 
 ## Run
-```docker-compose up```
+Update the tag in docker compose file 
 
+```docker-compose up
+docker exec -it <app-container-name> /bin/sh
+
+bench reinstall --admin-password r00t --db-root-username root --db-root-password root
+bench build
+```
 ## Build
 Docker compose build by default pull's frappe master branch </br>
 ``` docker-compose build ```
