@@ -1,14 +1,17 @@
-version: '3'
+version: '3.7'
+
+x-common-config: &common-config
+  image: shridhar/frappe-crm:zero_v10
 
 services:
     buid-app:
-      image: shridh0r/frappe:ubuntu-zero_v12
+      <<: *common-config
       build:
         context: .
         dockerfile: ./Dockerfile
 
     web-app:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         ports:
             - "8005:8000"
         restart: unless-stopped
@@ -19,7 +22,7 @@ services:
           - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
         depends_on:
           - redis
-          - postgres
+          - mysql
             # command: /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 4 --threads 4 -t 120 frappe.app:application --preload
         # command: sh -c "cd /home/frappe/frappe-bench && ./env/bin/pip install -e apps/sirius && /home/frappe/.local/bin/bench start"
         command: sh -c "cd /home/frappe/frappe-bench && bench use site1.local && /home/frappe/.local/bin/bench start"
@@ -27,7 +30,7 @@ services:
         # command: "/bin/bash"
 
     default-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -36,7 +39,7 @@ services:
           - web-app
 
     long-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -45,7 +48,7 @@ services:
           - web-app
 
     short-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -54,7 +57,7 @@ services:
           - web-app
 
     scheduler:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -63,7 +66,7 @@ services:
           - web-app
 
     socketio:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        <<: *common-config
         restart: unless-stopped
         ports:
             - "9000:9000"
@@ -86,6 +89,16 @@ services:
           - 5432
         volumes:
           - ./data/postgres:/var/lib/postgresql/data
+
+    mysql:
+        image: "wangxian/alpine-mysql"
+        ports:
+          - 3306
+        environment:
+          - MYSQL_ROOT_PASSWORD=root
+        volumes:
+          - ./data/mysql:/app
+          - ./my.cnf:/etc/mysql/my.cn
 
     # nginx:
     #     image: nginx
