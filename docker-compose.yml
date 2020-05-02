@@ -1,17 +1,14 @@
 version: '3.7'
 
-x-common-config: &common-config
-  image: shridhar/frappe-crm:zero_v10
-
 services:
     buid-app:
-      <<: *common-config
+      image: shridh0r/frappe:ubuntu-zero_v12
       build:
         context: .
         dockerfile: ./Dockerfile
 
     web-app:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         ports:
             - "8005:8000"
         restart: unless-stopped
@@ -30,7 +27,7 @@ services:
         # command: "/bin/bash"
 
     default-worker:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -39,7 +36,7 @@ services:
           - web-app
 
     long-worker:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -48,7 +45,7 @@ services:
           - web-app
 
     short-worker:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -57,7 +54,7 @@ services:
           - web-app
 
     scheduler:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         restart: unless-stopped
         volumes:
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
@@ -66,7 +63,7 @@ services:
           - web-app
 
     socketio:
-        <<: *common-config
+        image: shridh0r/frappe:ubuntu-zero_v12
         restart: unless-stopped
         ports:
             - "9000:9000"
@@ -83,12 +80,12 @@ services:
         volumes:
           - ./data/redis:/data
 
-    postgres:
-        image: "postgres"
-        ports:
-          - 5432
-        volumes:
-          - ./data/postgres:/var/lib/postgresql/data
+    # postgres:
+    #     image: "postgres"
+    #     ports:
+    #       - 5432
+    #     volumes:
+    #       - ./data/postgres:/var/lib/postgresql/data
 
     mysql:
         image: "wangxian/alpine-mysql"
@@ -98,7 +95,7 @@ services:
           - MYSQL_ROOT_PASSWORD=root
         volumes:
           - ./data/mysql:/app
-          - ./my.cnf:/etc/mysql/my.cn
+          - ./my.cnf:/etc/mysql/my.cnf
 
     # nginx:
     #     image: nginx
