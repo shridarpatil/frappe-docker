@@ -6,12 +6,13 @@ Prerequisites
 
 ## Clone 
 ```git@github.com:shridarpatil/frappe-docker.git```
+```cd  frappe-docker```
 
 ## Pull docker image
 ```docker pull shridh0r/frappe:\<tagname\>```
 
 ## Run
-Update the tag in docker compose file 
+Update the same tag in docker compose file 
 
 ```docker-compose up
 docker exec -it <app-container-name> /bin/sh
