@@ -17,7 +17,7 @@ Update the same tag in docker compose file
 ```docker-compose up
 docker exec -it <app-container-name> /bin/sh
 
-bench reinstall --admin-password r00t --db-root-username root --db-root-password root
+bench reinstall
 bench build
 ```
 ## Build
