@@ -1,1 +1,6 @@
 data/*
+apps/*
+*.build
+*/assets/*
+*/private/*
+*/public/*

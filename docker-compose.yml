@@ -13,18 +13,15 @@ services:
             - "8005:8000"
         restart: unless-stopped
         volumes:
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
-          - ./sites/site1.local:/home/frappe/frappe-bench/sites/site1.local
-          - ./sites/apps.txt:/home/frappe/frappe-bench/sites/apps.txt
+          - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
         depends_on:
           - redis
           - postgres
-            # command: /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 4 --threads 4 -t 120 frappe.app:application --preload
-        # command: sh -c "cd /home/frappe/frappe-bench && ./env/bin/pip install -e apps/sirius && /home/frappe/.local/bin/bench start"
-        command: sh -c "cd /home/frappe/frappe-bench && bench use site1.local && /home/frappe/.local/bin/bench start"
+        #        command: sh -c "cd /home/frappe/frappe-bench && bench use sirius && /home/frappe/.local/bin/bench start"
         # command: sh -c "cd /home/frappe/frappe-bench/sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload"
-        # command: "/bin/bash"
+        command: sh run.sh dev
 
     default-worker:
         image: shridh0r/frappe:ubuntu-zero_v12

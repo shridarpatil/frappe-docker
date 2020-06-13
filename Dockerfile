@@ -64,5 +64,5 @@ WORKDIR /home/frappe/frappe-bench
 #RUN bench setup socketio
 RUN bench setup requirements
 COPY Procfile /home/frappe/frappe-bench
-# CMD ["/home/frappe/frappe-bench/env/bin/gunicorn", "-b", "0.0.0.0:8000", "--workers", "8", "--threads", "4", "-t", "120", "frappe.app:application", "--preload"]
-CMD ["/bin/sh"]
+CMD ["/home/frappe/frappe-bench/env/bin/gunicorn", "-b", "0.0.0.0:8000", "--workers", "8", "--threads", "4", "-t", "120", "frappe.app:application", "--preload"]
+
