@@ -1,6 +1,6 @@
 {
  "db_name": "test_ubuntu",
  "db_password": "KnUsexdEqfJeta6Q",
- "db_type": "postgres",
+ "db_type": "mariadb",
  "developer_mode": 1
 }
