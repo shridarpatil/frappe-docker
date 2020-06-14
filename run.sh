@@ -1,7 +1,14 @@
 #i/bin/sh
 
 dev(){
-    pwd
+    cat <<"EOF"
+     _                                  _
+    | |                                | |
+  __| | _____   __  _ __ ___   ___   __| | ___
+ / _` |/ _ \ \ / / | '_ ` _ \ / _ \ / _` |/ _ \
+| (_| |  __/\ V /  | | | | | | (_) | (_| |  __/
+ \__,_|\___| \_/   |_| |_| |_|\___/ \__,_|\___|
+EOF
     while IFS= read -r line; do
         if [ ! "$line" = "frappe" ] && [ ! "$line" = "" ]; then
             echo "Installing app: $line"
@@ -13,6 +20,26 @@ dev(){
 
 
 prod(){
+    cat <<"EOF"
+                     _                       _
+                    | |                     | |
+ _ __  _ __ ___   __| |  _ __ ___   ___   __| | ___
+| '_ \| '__/ _ \ / _` | | '_ ` _ \ / _ \ / _` |/ _ \
+| |_) | | | (_) | (_| | | | | | | | (_) | (_| |  __/
+| .__/|_|  \___/ \__,_| |_| |_| |_|\___/ \__,_|\___|
+| |
+|_|
+EOF
+
     cd sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload
 }
-"$@"
+
+
+main(){
+    if [ "$mode" = "prod" ]; then
+        prod
+    else
+       dev
+    fi
+}
+main "$@"
