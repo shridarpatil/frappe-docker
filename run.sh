@@ -4,7 +4,11 @@ install(){
     while IFS= read -r line; do
         if [ ! "$line" = "frappe" ] && [ ! "$line" = "" ]; then
             echo "Installing app: $line"
-            ./env/bin/pip install -e  ./other_apps/$line
+            if [ -d "./other_apps/${line}" ]; then
+                ./env/bin/pip install -e  ./other_apps/$line
+            else
+                ./env/bin/pip install -e  ./apps/$line
+            fi
      fi
     done < ./sites/apps.txt
 
