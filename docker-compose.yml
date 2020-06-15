@@ -16,6 +16,7 @@ services:
           - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
           - ./run.sh:/home/frappe/frappe-bench/run.sh
+            # - ./sites/assets/frappe/:/home/frappe/frappe-bench/apps/frappe/frappe/public/
         depends_on:
           - redis
           - postgres
@@ -97,13 +98,13 @@ services:
     #       - ./data/mysql:/app
     #       - ./my.cnf:/etc/mysql/my.cnf
 
-    # nginx:
-    #     image: nginx
-    #     ports:
-    #       - "80:80"
-    #     volumes:
-    #       - ./nginx.conf:/etc/nginx/nginx.conf
-    #       - ./sites/assets:/var/www/assets
-    #     depends_on:
-    #       - web-app
+    nginx:
+        image: nginx
+        ports:
+          - "80:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+            - ./sites/assets:/home/assets
+        depends_on:
+          - web-app
 

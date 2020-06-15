@@ -32,8 +32,22 @@ prod(){
 |_|
 
 EOF
+    build
+    cd /home/frappe/frappe-bench/sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload
 
-    cd sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload
+}
+
+
+build(){
+    bench build;
+    cd /home/frappe/frappe-bench/sites/assets;
+    for link in $(find . -type l);
+    do
+        loc="$(dirname "$link")";
+        dir="$(readlink "$link")";
+        rm "$link";
+        cp -r "$dir" "$link";
+    done
 }
 
 
@@ -44,4 +58,6 @@ main(){
        dev
     fi
 }
+
+
 main "$@"
