@@ -25,7 +25,7 @@ services:
 
         # command: sh -c "cd /home/frappe/frappe-bench && bench use site1.local && /home/frappe/.local/bin/bench start"
         # command: sh -c "cd /home/frappe/frappe-bench/sites && /home/frappe/frappe-bench/env/bin/gunicorn -b 0.0.0.0:8000 --workers 8 --threads 4 -t 120 frappe.app:application --preload"
-        command: sh run.sh dev
+        command: sh run.sh
 
     default-worker:
         image: shridh0r/frappe:ubuntu-zero_v12

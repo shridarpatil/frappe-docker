@@ -1,5 +1,14 @@
 #i/bin/sh
 
+install(){
+    while IFS= read -r line; do
+        if [ ! "$line" = "frappe" ] && [ ! "$line" = "" ]; then
+            echo "Installing app: $line"
+            ./env/bin/pip install -e  ./apps/$line
+     fi
+    done < ./sites/apps.txt
+
+}
 dev(){
     cat <<"EOF"
      _                                  _
@@ -10,12 +19,7 @@ dev(){
  \__,_|\___| \_/   |_| |_| |_|\___/ \__,_|\___|
 
 EOF
-    while IFS= read -r line; do
-        if [ ! "$line" = "frappe" ] && [ ! "$line" = "" ]; then
-            echo "Installing app: $line"
-            ./env/bin/pip install -e  ./apps/$line
-     fi
-    done < ./sites/apps.txt
+    install
     bench start
 }
 
@@ -40,6 +44,7 @@ EOF
 
 build(){
     bench build;
+    install;
     cd /home/frappe/frappe-bench/sites/assets;
     for link in $(find . -type l);
     do
