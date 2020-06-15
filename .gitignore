@@ -1,5 +1,6 @@
 data/*
 apps/*
+!apps/README.md
 *.build
 */assets/*
 */private/*

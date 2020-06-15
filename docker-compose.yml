@@ -15,6 +15,7 @@ services:
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
+          - ./apps/:/home/frappe/frappe-bench/other_apps/
           - ./run.sh:/home/frappe/frappe-bench/run.sh
             # - ./sites/assets/frappe/:/home/frappe/frappe-bench/apps/frappe/frappe/public/
         depends_on:
