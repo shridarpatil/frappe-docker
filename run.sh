@@ -1,4 +1,4 @@
-#i/bin/sh
+#!/bin/sh
 
 install(){
     while IFS= read -r line; do
