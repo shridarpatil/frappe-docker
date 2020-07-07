@@ -53,7 +53,7 @@ build(){
         loc="$(dirname "$link")";
         dir="$(readlink "$link")";
         rm "$link";
-        cp -r -L "$dir" "$link";
+        cp -RLv "$dir" "$link";
         rm -rf public
     done
 }
