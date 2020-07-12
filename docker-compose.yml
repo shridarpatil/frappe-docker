@@ -2,13 +2,13 @@ version: '3.7'
 
 services:
     buid-app:
-      image: shridh0r/frappe:ubuntu-zero_v12
+      image: shridh0r/erpnext:develop
       build:
         context: .
         dockerfile: ./Dockerfile
 
     web-app:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         ports:
             - "8005:8000"
         restart: unless-stopped
@@ -19,7 +19,7 @@ services:
             # - ./sites/assets/frappe/:/home/frappe/frappe-bench/apps/frappe/frappe/public/
         depends_on:
           - redis
-          - postgres
+          - db
         env_file:
          - env_file
 
@@ -28,48 +28,52 @@ services:
         command: sh run.sh
 
     default-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         restart: unless-stopped
         volumes:
+          - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
         command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue default"
         depends_on:
           - web-app
 
     long-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         restart: unless-stopped
         volumes:
+          - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
         command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue long"
         depends_on:
           - web-app
 
     short-worker:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         restart: unless-stopped
         volumes:
+          - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
         command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue short"
         depends_on:
           - web-app
 
     scheduler:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         restart: unless-stopped
         volumes:
+          - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
         command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench schedule"
         depends_on:
           - web-app
 
     socketio:
-        image: shridh0r/frappe:ubuntu-zero_v12
+        image: shridh0r/erpnext:develop
         restart: unless-stopped
         ports:
             - "9000:9000"
         volumes:
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
+          - ./sites:/home/frappe/frappe-bench/sites
         command: sh -c "cd /home/frappe/frappe-bench && /usr/bin/node /home/frappe/frappe-bench/apps/frappe/socketio.js"
         depends_on:
           - web-app
@@ -81,26 +85,22 @@ services:
         volumes:
           - ./data/redis:/data
 
-    postgres:
-        image: "postgres"
-        ports:
-          - 5432
-        volumes:
-          - ./data/postgres:/var/lib/postgresql/data
-        environment:
-          POSTGRES_PASSWORD: root
-
-
-
-    # mysql:
-    #     image: "wangxian/alpine-mysql"
+    # db:
+    #     image: "postgres"
     #     ports:
-    #       - 3306
-    #     environment:
-    #       - MYSQL_ROOT_PASSWORD=root
+    #       - 5432
     #     volumes:
-    #       - ./data/mysql:/app
-    #       - ./my.cnf:/etc/mysql/my.cnf
+    #       - ./data/postgres:/var/lib/postgresql/data
+
+    db:
+        image: "wangxian/alpine-mysql"
+        ports:
+          - 3306
+        environment:
+          - MYSQL_ROOT_PASSWORD=root
+        volumes:
+          - ./data/mysql:/app
+          - ./my.cnf:/etc/mysql/my.cnf
 
     nginx:
         image: nginx
