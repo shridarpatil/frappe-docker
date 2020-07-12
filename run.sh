@@ -46,7 +46,9 @@ EOF
 
 build(){
     install;
-    bench build;
+    if [ "$assets" == true]; then
+        bench build;
+    fi
     cd /home/frappe/frappe-bench/sites/assets;
     for link in $(find . -type l);
     do

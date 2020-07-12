@@ -85,22 +85,22 @@ services:
         volumes:
           - ./data/redis:/data
 
-    # db:
-    #     image: "postgres"
-    #     ports:
-    #       - 5432
-    #     volumes:
-    #       - ./data/postgres:/var/lib/postgresql/data
-
     db:
-        image: "wangxian/alpine-mysql"
+        image: "postgres"
         ports:
-          - 3306
-        environment:
-          - MYSQL_ROOT_PASSWORD=root
+          - 5432
         volumes:
-          - ./data/mysql:/app
-          - ./my.cnf:/etc/mysql/my.cnf
+          - ./data/postgres:/var/lib/postgresql/data
+
+    # db:
+    #     image: "wangxian/alpine-mysql"
+    #     ports:
+    #       - 3306
+    #     environment:
+    #       - MYSQL_ROOT_PASSWORD=root
+    #     volumes:
+    #       - ./data/mysql:/app
+    #       - ./my.cnf:/etc/mysql/my.cnf
 
     nginx:
         image: nginx
