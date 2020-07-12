@@ -2,13 +2,13 @@ version: '3.7'
 
 services:
     buid-app:
-      image: shridh0r/erpnext:develop
+      image: shridh0r/frappe:develop
       build:
         context: .
         dockerfile: ./Dockerfile
 
     web-app:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         ports:
             - "8005:8000"
         restart: unless-stopped
@@ -28,7 +28,7 @@ services:
         command: sh run.sh
 
     default-worker:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -38,7 +38,7 @@ services:
           - web-app
 
     long-worker:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -48,7 +48,7 @@ services:
           - web-app
 
     short-worker:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -58,7 +58,7 @@ services:
           - web-app
 
     scheduler:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -68,7 +68,7 @@ services:
           - web-app
 
     socketio:
-        image: shridh0r/erpnext:develop
+        image: shridh0r/frappe:develop
         restart: unless-stopped
         ports:
             - "9000:9000"
