@@ -27,7 +27,7 @@ RUN apt-get install -y --no-install-suggests --no-install-recommends \
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update
+RUN apt-get update --fix-missing
 RUN apt-get install yarn
 
 # Add frappe user and setup sudo
@@ -55,7 +55,7 @@ ARG BENCH_BRANCH=master
 ARG BENCH_PATH=https://github.com/frappe/bench.git
 ENV PATH="${PATH}:/home/frappe/.local/bin"
 
-RUN sudo apt-get install -y npm
+RUN sudo apt-get install -y --fix-missing  npm
 
 ARG CACHE
 RUN /bin/sh ./start_up.sh build
