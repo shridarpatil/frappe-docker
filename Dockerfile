@@ -13,7 +13,6 @@ RUN apt-get update
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
     git \
     nodejs \
-    default-libmysqlclient-dev \
     libssl-dev \
     wkhtmltopdf \
     curl \
@@ -21,6 +20,7 @@ RUN apt-get install -y --no-install-suggests --no-install-recommends \
     g++ \
     build-essential \
     sudo \
+    mariadb-client\
     postgresql-client \
     curl \
     gnupg
