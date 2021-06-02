@@ -10,6 +10,7 @@ ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
 RUN apt-get update
+RUN apt-get install curl
 RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
 
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
@@ -17,7 +18,6 @@ RUN apt-get install -y --no-install-suggests --no-install-recommends \
     nodejs \
     libssl-dev \
     wkhtmltopdf \
-    curl \
     gcc \
     g++ \
     build-essential \
