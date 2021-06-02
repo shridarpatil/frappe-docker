@@ -10,8 +10,8 @@ ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
 RUN apt-get update
-RUN apt-get install curl
-RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+RUN apt-get -y install curl
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
     git \
@@ -57,7 +57,6 @@ ARG BENCH_BRANCH=master
 ARG BENCH_PATH=https://github.com/frappe/bench.git
 ENV PATH="${PATH}:/home/frappe/.local/bin"
 
-RUN sudo apt-get install -y --fix-missing  npm
 
 ARG CACHE
 RUN /bin/sh ./start_up.sh build
