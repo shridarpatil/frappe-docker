@@ -30,6 +30,7 @@ build(){
     echo "====================== bench init =================================="
     echo "frappe $FRAPPE frappe-path $FRAPPE_PATH "
     export PATH=$PATH:~/.local/bin/
+#    ./env/bin/pip install --upgrade setuptools
     bench init $FRAPPE --frappe-path $FRAPPE_PATH --frappe-branch $FRAPPE_BRANCH  --python $FRAPPE_PYTHON --no-backups --skip-redis-config-generation --skip-assets --no-procfile
 
 }
