@@ -1,7 +1,7 @@
 name: publish
 on: [push]
 jobs:
-publish-hello-docker-image:
+publish-frappe-image:
 runs-on: ubuntu-latest
 steps:
 - uses: actions/checkout@v2
@@ -11,7 +11,7 @@ with:
 registry: ghcr.io
 username: ${{ github.actor }}
 password: ${{ secrets.GITHUB_TOKEN }}
-- name: Build the hello-docker Docker image
+- name: Build the frappe Docker image
 run: |
        docker build . --tag ghcr.io/shridarpatil/frappe:latest
        docker run ghcr.io/shridarpatil/frappe:latest
