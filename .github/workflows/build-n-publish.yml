@@ -21,5 +21,4 @@ jobs:
       - name: build and deploy
         run: |
          docker build . --tag ghcr.io/shridarpatil/frappe:latest
-         docker run ghcr.io/shridarpatil/frappe:latest
          docker push ghcr.io/shridarpatil/frappe:latest
