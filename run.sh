@@ -46,7 +46,7 @@ EOF
 
 build(){
     install;
-    if [ "$assets" == true]; then
+    if [ "$assets" = true ]; then
         bench build;
     fi
     cd /home/frappe/frappe-bench/sites/assets;
