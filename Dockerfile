@@ -12,7 +12,7 @@ ENV LC_ALL=C.UTF-8
 RUN apt-get update
 RUN apt-get -y install python2
 RUN apt-get -y install curl
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL hthttps://deb.nodesource.com/setup_15.x | bash -
 
 RUN apt-get install -y --no-install-suggests --no-install-recommends \
     git \
