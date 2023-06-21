@@ -25,5 +25,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: build and deploy
         run: |
-         docker build . --tag ghcr.io/shridarpatil/frappe:{{ env.RELEASE_VERSION }}
-         docker push ghcr.io/shridarpatil/frappe:{{ env.RELEASE_VERSION }}
+         docker build . --tag ghcr.io/shridarpatil/frappe:${{ env.RELEASE_VERSION }}
+         docker push ghcr.io/shridarpatil/frappe:${{ env.RELEASE_VERSION }}
