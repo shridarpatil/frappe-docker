@@ -91,6 +91,8 @@ services:
           - 5432
         volumes:
           - ./data/postgres:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_PASSWORD=root
 
     # db:
     #     image: "wangxian/alpine-mysql"
