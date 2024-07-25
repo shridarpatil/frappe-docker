@@ -3,6 +3,7 @@ apps/*
 !apps/README.md
 *.build
 sites/assets/*
+!sites/assets/README.md
 */private/*
 */public/*
 */logs/*
