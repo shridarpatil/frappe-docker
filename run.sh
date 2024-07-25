@@ -23,7 +23,7 @@ dev(){
 
 EOF
     bench setup requirements
-    install
+    install;
     bench start
 }
 
@@ -47,19 +47,12 @@ EOF
 
 
 build(){
-    install;
-    if [ "$assets" == true]; then
-        bench build;
+    install
+    if [ "$assets" = true ]; then
+        echo "Building assets....."
+        bench build --help;
+        bench build --hard-link;
     fi
-    cd /home/frappe/frappe-bench/sites/assets;
-    for link in $(find . -type l);
-    do
-        loc="$(dirname "$link")";
-        dir="$(readlink "$link")";
-        rm "$link";
-        cp -RLv "$dir" "$link";
-        rm -rf public
-    done
 }
 
 
