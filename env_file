@@ -1,2 +1,2 @@
-mode=prod
+mode=dev
 assets=true
