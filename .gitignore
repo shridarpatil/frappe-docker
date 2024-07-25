@@ -2,7 +2,7 @@ data/*
 apps/*
 !apps/README.md
 *.build
-./sites/assets/*
+sites/assets/*
 */private/*
 */public/*
 */logs/*
