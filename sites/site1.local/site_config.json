@@ -1,5 +1,5 @@
 {
- "db_name": "test_ubuntu",
+ "db_name": "site1.local",
  "db_password": "KnUsexdEqfJeta6Q",
  "db_type": "postgres",
  "developer_mode": 1
