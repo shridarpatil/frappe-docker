@@ -7,4 +7,5 @@ sites/assets/*
 */private/*
 */public/*
 */logs/*
+!*/logs/README.md
 *log*
