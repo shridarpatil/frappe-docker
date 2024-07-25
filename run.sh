@@ -50,7 +50,6 @@ build(){
     install
     if [ "$assets" = true ]; then
         echo "Building assets....."
-        bench build --help;
         bench build --hard-link;
     fi
 }
