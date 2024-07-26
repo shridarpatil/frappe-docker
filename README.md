@@ -20,6 +20,7 @@ docker exec -it <app-container-name> /bin/sh
 
 bench reinstall
 bench build
+
 ```
 ## Build
 Docker compose build by default pull's frappe master branch </br>
@@ -44,7 +45,7 @@ docker-compose build --build-arg FRAPPE_PATH=https://github.com/zerodhatech/frap
 ## Create site
 Exec into docker container and create new site
 
-Create new-site
+Create new-site by any name
 ```
 bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password root
 ```
