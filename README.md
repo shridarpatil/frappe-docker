@@ -67,24 +67,16 @@ No need to edit `docker-compose.yml` - apps are auto-discovered!
 ./bench-docker bench --site site1.local install-app my_custom_app
 ```
 
-### Clone an existing app
+### Get an existing app from git
 
-1. Clone your app in `./apps/` folder:
-   ```bash
-   cd apps
-   git clone https://github.com/your/app.git my_app
-   ```
+```bash
+./bench-docker get-app https://github.com/frappe/erpnext
+# Or with a specific branch
+./bench-docker get-app https://github.com/frappe/erpnext version-15
 
-2. Add app name to `sites/apps.txt`:
-   ```bash
-   echo "my_app" >> sites/apps.txt
-   ```
-
-3. Restart and install:
-   ```bash
-   ./bench-docker up --dev
-   ./bench-docker bench --site site1.local install-app my_app
-   ```
+./bench-docker up --dev
+./bench-docker bench --site site1.local install-app erpnext
+```
 
 ## Services
 

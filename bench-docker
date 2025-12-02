@@ -89,6 +89,51 @@ case $COMMAND in
         echo "Restart to load the new app: ./bench-docker up --dev"
         echo "Then install on site: ./bench-docker bench --site site1.local install-app $APP_NAME"
         ;;
+    get-app)
+        APP_URL=$(echo "$EXTRA_ARGS" | awk '{print $1}' | xargs)
+        BRANCH=$(echo "$EXTRA_ARGS" | awk '{print $2}' | xargs)
+
+        if [ -z "$APP_URL" ]; then
+            echo "Error: App URL is required"
+            echo "Usage: ./bench-docker get-app <git-url> [branch]"
+            exit 1
+        fi
+
+        # Extract app name from URL
+        APP_NAME=$(basename "$APP_URL" .git)
+
+        if [ -d "./apps/$APP_NAME" ]; then
+            echo "Error: App '$APP_NAME' already exists in ./apps/"
+            exit 1
+        fi
+
+        echo "Getting app: $APP_NAME from $APP_URL"
+
+        # Get app inside container
+        if [ -n "$BRANCH" ]; then
+            docker compose exec web-app bench get-app --branch "$BRANCH" "$APP_URL"
+        else
+            docker compose exec web-app bench get-app "$APP_URL"
+        fi
+
+        # Copy app from container to host
+        echo "Copying app to host ./apps/$APP_NAME..."
+        docker compose cp web-app:/home/frappe/frappe-bench/apps/"$APP_NAME" ./apps/
+
+        # Add to apps.txt if not already there
+        if ! grep -q "^${APP_NAME}$" ./sites/apps.txt 2>/dev/null; then
+            echo "$APP_NAME" >> ./sites/apps.txt
+            echo "Added $APP_NAME to sites/apps.txt"
+        fi
+
+        # Regenerate override file
+        make generate-override
+
+        echo ""
+        echo "App '$APP_NAME' installed successfully!"
+        echo "Restart to load the new app: ./bench-docker up --dev"
+        echo "Then install on site: ./bench-docker bench --site site1.local install-app $APP_NAME"
+        ;;
     fix-db-permissions)
         # Fix DB permissions so workers can connect
         # Reads site_config.json and grants access from any host
@@ -139,6 +184,7 @@ case $COMMAND in
         echo "  shell            Open bash in web-app"
         echo "  bench <cmd>      Run bench command"
         echo "  new-app <name>   Create a new Frappe app"
+        echo "  get-app <url> [branch]  Clone app from git repository"
         echo "  list-apps        Show apps"
         echo "  fix-db-permissions [site]  Fix DB access for workers"
         echo ""
@@ -148,6 +194,8 @@ case $COMMAND in
         echo "  ./bench-docker up --dev --postgres"
         echo "  ./bench-docker up --prod"
         echo "  ./bench-docker new-app my_custom_app"
+        echo "  ./bench-docker get-app https://github.com/frappe/erpnext"
+        echo "  ./bench-docker get-app https://github.com/frappe/erpnext version-15"
         echo "  ./bench-docker bench migrate"
         ;;
     *)
