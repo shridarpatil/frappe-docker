@@ -47,7 +47,21 @@ case $COMMAND in
         make shell
         ;;
     bench)
-        make bench CMD="$EXTRA_ARGS"
+        # Check if it's a get-app or new-app command - redirect to proper handler
+        BENCH_CMD=$(echo "$EXTRA_ARGS" | awk '{print $1}')
+        BENCH_ARGS=$(echo "$EXTRA_ARGS" | cut -d' ' -f2-)
+
+        if [ "$BENCH_CMD" = "get-app" ]; then
+            echo "Hint: Use './bench-docker get-app' instead for proper host sync"
+            echo ""
+            exec "$0" get-app $BENCH_ARGS
+        elif [ "$BENCH_CMD" = "new-app" ]; then
+            echo "Hint: Use './bench-docker new-app' instead for proper host sync"
+            echo ""
+            exec "$0" new-app $BENCH_ARGS
+        else
+            make bench CMD="$EXTRA_ARGS"
+        fi
         ;;
     list-apps)
         make list-apps
