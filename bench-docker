@@ -110,7 +110,7 @@ case $COMMAND in
         echo "  DB Type: ${DB_TYPE:-mariadb}, DB: $DB_NAME, User: $DB_USER"
 
         if [ "$DB_TYPE" = "postgres" ]; then
-            docker compose exec postgres psql -U postgres -c \
+            docker compose exec -e PGPASSWORD=root postgres psql -h 127.0.0.1 -U postgres -c \
                 "ALTER USER \"${DB_USER}\" WITH PASSWORD '${DB_PASS}'; GRANT ALL PRIVILEGES ON DATABASE \"${DB_NAME}\" TO \"${DB_USER}\";"
         else
             docker compose exec mariadb mariadb -h 127.0.0.1 -uroot -proot -e \

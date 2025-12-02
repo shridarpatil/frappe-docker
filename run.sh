@@ -30,10 +30,10 @@ fix_db_permissions(){
         if [ -n "$db_name" ] && [ -n "$db_user" ]; then
             echo "Fixing DB permissions for site: $site (${db_type:-mariadb})"
             if [ "$db_type" = "postgres" ]; then
-                PGPASSWORD=root psql -h postgres -U postgres -c \
+                PGPASSWORD=root psql -h db -U postgres -c \
                     "ALTER USER \"${db_user}\" WITH PASSWORD '${db_pass}'; GRANT ALL PRIVILEGES ON DATABASE \"${db_name}\" TO \"${db_user}\";" 2>/dev/null || true
             else
-                mysql -h mariadb -uroot -proot -e \
+                mysql -h db -uroot -proot -e \
                     "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'%' IDENTIFIED BY '${db_pass}'; FLUSH PRIVILEGES;" 2>/dev/null || true
             fi
         fi
