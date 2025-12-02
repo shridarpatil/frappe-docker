@@ -22,14 +22,20 @@ fix_db_permissions(){
             continue
         fi
 
+        db_type=$(grep -o '"db_type": "[^"]*' "$config_file" | cut -d'"' -f4)
         db_name=$(grep -o '"db_name": "[^"]*' "$config_file" | cut -d'"' -f4)
         db_user=$(grep -o '"db_user": "[^"]*' "$config_file" | cut -d'"' -f4)
         db_pass=$(grep -o '"db_password": "[^"]*' "$config_file" | cut -d'"' -f4)
 
         if [ -n "$db_name" ] && [ -n "$db_user" ]; then
-            echo "Fixing DB permissions for site: $site"
-            mysql -h db -uroot -proot -e \
-                "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'%' IDENTIFIED BY '${db_pass}'; FLUSH PRIVILEGES;" 2>/dev/null || true
+            echo "Fixing DB permissions for site: $site (${db_type:-mariadb})"
+            if [ "$db_type" = "postgres" ]; then
+                PGPASSWORD=root psql -h postgres -U postgres -c \
+                    "ALTER USER \"${db_user}\" WITH PASSWORD '${db_pass}'; GRANT ALL PRIVILEGES ON DATABASE \"${db_name}\" TO \"${db_user}\";" 2>/dev/null || true
+            else
+                mysql -h mariadb -uroot -proot -e \
+                    "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'%' IDENTIFIED BY '${db_pass}'; FLUSH PRIVILEGES;" 2>/dev/null || true
+            fi
         fi
     done
 }

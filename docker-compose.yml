@@ -24,8 +24,14 @@ services:
           # App volumes are auto-generated in docker-compose.override.yml
           # Run 'make up' instead of 'docker-compose up'
         depends_on:
-          - redis
-          - db
+          redis:
+            condition: service_started
+          mariadb:
+            condition: service_started
+            required: false
+          postgres:
+            condition: service_started
+            required: false
         env_file:
          - env_file
 
@@ -42,8 +48,14 @@ services:
           - ./run.sh:/home/frappe/frappe-bench/run.sh
         command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue default"
         depends_on:
-          - redis
-          - db
+          redis:
+            condition: service_started
+          mariadb:
+            condition: service_started
+            required: false
+          postgres:
+            condition: service_started
+            required: false
 
     long-worker:
         image: shridh0r/frappe:develop
@@ -54,8 +66,14 @@ services:
           - ./run.sh:/home/frappe/frappe-bench/run.sh
         command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue long"
         depends_on:
-          - redis
-          - db
+          redis:
+            condition: service_started
+          mariadb:
+            condition: service_started
+            required: false
+          postgres:
+            condition: service_started
+            required: false
 
     short-worker:
         image: shridh0r/frappe:develop
@@ -66,8 +84,14 @@ services:
           - ./run.sh:/home/frappe/frappe-bench/run.sh
         command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue short"
         depends_on:
-          - redis
-          - db
+          redis:
+            condition: service_started
+          mariadb:
+            condition: service_started
+            required: false
+          postgres:
+            condition: service_started
+            required: false
 
     scheduler:
         image: shridh0r/frappe:develop
@@ -78,8 +102,14 @@ services:
           - ./run.sh:/home/frappe/frappe-bench/run.sh
         command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench schedule"
         depends_on:
-          - redis
-          - db
+          redis:
+            condition: service_started
+          mariadb:
+            condition: service_started
+            required: false
+          postgres:
+            condition: service_started
+            required: false
 
     socketio:
         image: shridh0r/frappe:develop
@@ -101,25 +131,26 @@ services:
         volumes:
           - ./data/redis:/data
 
-    # db:
-    #     image: "postgres:14.10"
-    #     ports:
-    #       - 5432
-    #     volumes:
-    #       - ./data/postgres:/var/lib/postgresql/data
-    #     environment:
-    #       - POSTGRES_PASSWORD=root
-
-    db:
-        # image: "wangxian/alpine-mysql"
-        image: "mariadb:12"
+    mariadb:
+        image: "${DB_IMAGE:-mariadb:12}"
+        profiles: ["mariadb"]
         ports:
           - 3306
         environment:
-          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root}
         volumes:
           - ./data/mysql:/var/lib/mysql
           - ./new.cnf:/etc/mysql/my.cnf
+
+    postgres:
+        image: "postgres:14.10"
+        profiles: ["postgres"]
+        ports:
+          - 5432
+        environment:
+          - POSTGRES_PASSWORD=${DB_ROOT_PASSWORD:-root}
+        volumes:
+          - ./data/postgres:/var/lib/postgresql/data
 
     nginx:
         image: nginx

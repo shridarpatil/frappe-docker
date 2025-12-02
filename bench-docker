@@ -16,6 +16,7 @@ DEV=""
 WORKERS=""
 SOCKETIO=""
 PROD=""
+DB="mariadb"
 
 for arg in "$@"; do
     case $arg in
@@ -23,13 +24,15 @@ for arg in "$@"; do
         --workers)  WORKERS=1 ;;
         --socketio) SOCKETIO=1 ;;
         --prod)     PROD=1 ;;
+        --mariadb)  DB=mariadb ;;
+        --postgres) DB=postgres ;;
         *)          EXTRA_ARGS="$EXTRA_ARGS $arg" ;;
     esac
 done
 
 case $COMMAND in
     up)
-        make up dev=$DEV workers=$WORKERS socketio=$SOCKETIO prod=$PROD
+        make up dev=$DEV workers=$WORKERS socketio=$SOCKETIO prod=$PROD db=$DB
         ;;
     down)
         make down
@@ -61,15 +64,21 @@ case $COMMAND in
             exit 1
         fi
 
+        DB_TYPE=$(grep -o '"db_type": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
         DB_NAME=$(grep -o '"db_name": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
         DB_USER=$(grep -o '"db_user": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
         DB_PASS=$(grep -o '"db_password": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
 
         echo "Fixing DB permissions for site: $SITE"
-        echo "  DB: $DB_NAME, User: $DB_USER"
+        echo "  DB Type: ${DB_TYPE:-mariadb}, DB: $DB_NAME, User: $DB_USER"
 
-        docker compose exec db mariadb -h 127.0.0.1 -uroot -proot -e \
-            "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}'; FLUSH PRIVILEGES;"
+        if [ "$DB_TYPE" = "postgres" ]; then
+            docker compose exec postgres psql -U postgres -c \
+                "ALTER USER \"${DB_USER}\" WITH PASSWORD '${DB_PASS}'; GRANT ALL PRIVILEGES ON DATABASE \"${DB_NAME}\" TO \"${DB_USER}\";"
+        else
+            docker compose exec mariadb mariadb -h 127.0.0.1 -uroot -proot -e \
+                "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}'; FLUSH PRIVILEGES;"
+        fi
 
         echo "Done! Workers should now be able to connect."
         ;;
@@ -84,6 +93,8 @@ case $COMMAND in
         echo "    --workers      Include workers + scheduler"
         echo "    --socketio     Include socketio"
         echo "    --prod         Production (all services)"
+        echo "    --mariadb      Use MariaDB (default)"
+        echo "    --postgres     Use PostgreSQL"
         echo ""
         echo "  down             Stop all containers"
         echo "  restart          Restart containers"
@@ -96,6 +107,7 @@ case $COMMAND in
         echo "Examples:"
         echo "  ./bench-docker up --dev"
         echo "  ./bench-docker up --dev --workers"
+        echo "  ./bench-docker up --dev --postgres"
         echo "  ./bench-docker up --prod"
         echo "  ./bench-docker bench migrate"
         ;;

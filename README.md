@@ -31,12 +31,14 @@ Use `./bench-docker` to manage containers:
 ### Start Containers
 
 ```bash
-./bench-docker up                     # Start detached (web-app only)
+./bench-docker up                     # Start detached (MariaDB)
 ./bench-docker up --dev               # Dev mode with logs (foreground)
+./bench-docker up --postgres          # Use PostgreSQL instead of MariaDB
 ./bench-docker up --workers           # Include background workers + scheduler
 ./bench-docker up --socketio          # Include socketio
 ./bench-docker up --prod              # Production (all services)
 ./bench-docker up --dev --workers     # Dev mode with workers
+./bench-docker up --dev --postgres    # Dev mode with PostgreSQL
 ```
 
 ### Other Commands
@@ -84,7 +86,8 @@ No need to edit `docker-compose.yml` - apps are auto-discovered!
 |---------|---------|-------------|
 | web-app | (always) | Main Frappe web server |
 | redis | (always) | Cache and queue backend |
-| db | (always) | MariaDB database |
+| mariadb | `--mariadb` (default) | MariaDB database |
+| postgres | `--postgres` | PostgreSQL database |
 | nginx | (always) | Reverse proxy |
 | default-worker | `--workers` | Background job worker (default queue) |
 | long-worker | `--workers` | Background job worker (long queue) |
@@ -118,12 +121,15 @@ docker-compose build \
 ## Create Site
 
 ```bash
-# MariaDB
+# Start with MariaDB (default)
+./bench-docker up --dev
 ./bench-docker shell
 bench new-site site1.local --force --db-root-password root
 
-# PostgreSQL (if using postgres)
-bench new-site site1.local --force --db-type postgres --db-root-username postgres --db-root-password root
+# OR start with PostgreSQL
+./bench-docker up --dev --postgres
+./bench-docker shell
+bench new-site site1.local --force --db-type postgres --db-host postgres --db-root-username postgres --db-root-password root
 ```
 
 ## Project Structure

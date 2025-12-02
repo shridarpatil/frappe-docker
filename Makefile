@@ -8,8 +8,10 @@ OVERRIDE_FILE := docker-compose.override.yml
 # Services that need app volume mounts
 SERVICES := web-app default-worker long-worker short-worker scheduler socketio
 
-# Build profile flags based on options
-PROFILES :=
+# Database selection (default: mariadb)
+DB ?= mariadb
+PROFILES := --profile $(DB)
+
 ifdef workers
 	PROFILES += --profile workers
 endif
@@ -57,7 +59,7 @@ endif
 
 .PHONY: down
 down:
-	docker compose --profile prod down
+	docker compose --profile prod --profile mariadb --profile postgres down
 
 .PHONY: restart
 restart: generate-override
@@ -88,20 +90,22 @@ help:
 	@echo "Frappe Docker Commands:"
 	@echo ""
 	@echo "Start/Stop:"
-	@echo "  make up                  - Start (detached)"
-	@echo "  make up dev=1            - Dev mode (with logs)"
-	@echo "  make up workers=1        - Include workers + scheduler"
-	@echo "  make up socketio=1       - Include socketio"
-	@echo "  make up prod=1           - Production (all services)"
-	@echo "  make up dev=1 workers=1  - Dev with workers"
-	@echo "  make down                - Stop all containers"
-	@echo "  make restart             - Restart containers"
+	@echo "  make up                    - Start (detached, mariadb)"
+	@echo "  make up dev=1              - Dev mode (with logs)"
+	@echo "  make up db=postgres        - Use PostgreSQL"
+	@echo "  make up db=mariadb         - Use MariaDB (default)"
+	@echo "  make up workers=1          - Include workers + scheduler"
+	@echo "  make up socketio=1         - Include socketio"
+	@echo "  make up prod=1             - Production (all services)"
+	@echo "  make up dev=1 workers=1    - Dev with workers"
+	@echo "  make down                  - Stop all containers"
+	@echo "  make restart               - Restart containers"
 	@echo ""
 	@echo "Utilities:"
-	@echo "  make logs                - Follow web-app logs"
-	@echo "  make shell               - Open bash in web-app"
-	@echo "  make bench CMD='...'     - Run bench command"
-	@echo "  make list-apps           - Show apps"
+	@echo "  make logs                  - Follow web-app logs"
+	@echo "  make shell                 - Open bash in web-app"
+	@echo "  make bench CMD='...'       - Run bench command"
+	@echo "  make list-apps             - Show apps"
 	@echo ""
 	@echo "To add a new app:"
 	@echo "  1. Clone/create app in ./apps/"
