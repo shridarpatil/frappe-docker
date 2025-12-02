@@ -39,10 +39,11 @@ services:
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
-        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue default"
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
+        command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue default"
         depends_on:
-          - web-app
+          - redis
+          - db
 
     long-worker:
         image: shridh0r/frappe:develop
@@ -50,10 +51,11 @@ services:
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
-        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue long"
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
+        command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue long"
         depends_on:
-          - web-app
+          - redis
+          - db
 
     short-worker:
         image: shridh0r/frappe:develop
@@ -61,10 +63,11 @@ services:
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
-        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench worker --queue short"
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
+        command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench worker --queue short"
         depends_on:
-          - web-app
+          - redis
+          - db
 
     scheduler:
         image: shridh0r/frappe:develop
@@ -72,10 +75,11 @@ services:
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
-          - ./sites/common_site_config.json:/home/frappe/frappe-bench/sites/common_site_config.json
-        command: sh -c "cd /home/frappe/frappe-bench && /home/frappe/.local/bin/bench schedule"
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
+        command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && bench setup requirements && install && bench schedule"
         depends_on:
-          - web-app
+          - redis
+          - db
 
     socketio:
         image: shridh0r/frappe:develop
@@ -85,9 +89,10 @@ services:
             - "9000:9000"
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
-        command: sh -c "cd /home/frappe/frappe-bench && /usr/bin/node /home/frappe/frappe-bench/apps/frappe/socketio.js"
+          - ./run.sh:/home/frappe/frappe-bench/run.sh
+        command: sh -c "cd /home/frappe/frappe-bench && . ./run.sh && install && node apps/frappe/socketio.js"
         depends_on:
-          - web-app
+          - redis
 
     redis:
         image: "redis:7"

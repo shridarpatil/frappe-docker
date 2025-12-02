@@ -8,12 +8,19 @@ OVERRIDE_FILE := docker-compose.override.yml
 # Services that need app volume mounts
 SERVICES := web-app default-worker long-worker short-worker scheduler socketio
 
+# Build profile flags based on options
+PROFILES :=
+ifdef workers
+	PROFILES += --profile workers
+endif
+ifdef socketio
+	PROFILES += --profile socketio
+endif
+
 # Generate docker-compose.override.yml with volume mounts for all apps in ./apps/
 .PHONY: generate-override
 generate-override:
-	@echo "version: '3.8'" > $(OVERRIDE_FILE)
-	@echo "" >> $(OVERRIDE_FILE)
-	@echo "services:" >> $(OVERRIDE_FILE)
+	@echo "services:" > $(OVERRIDE_FILE)
 	@for service in $(SERVICES); do \
 		echo "  $$service:" >> $(OVERRIDE_FILE); \
 		echo "    volumes:" >> $(OVERRIDE_FILE); \
@@ -24,29 +31,20 @@ generate-override:
 	done
 	@echo "Generated $(OVERRIDE_FILE) with apps: $$(ls -d $(APPS_DIR)/*/ 2>/dev/null | xargs -n1 basename | tr '\n' ' ')"
 
-# Development mode (web-app only, no workers)
+# Development mode (with logs in foreground)
+# Usage: make up dev=1 [workers=1] [socketio=1]
 .PHONY: up
 up: generate-override
-	docker compose up -d
-
-.PHONY: up-logs
-up-logs: generate-override
-	docker compose up
-
-# With workers (default, long, short workers + scheduler)
-.PHONY: up-workers
-up-workers: generate-override
-	docker compose --profile workers up -d
-
-# With socketio
-.PHONY: up-socketio
-up-socketio: generate-override
-	docker compose --profile socketio up -d
-
-# Production mode (all services: workers + socketio)
-.PHONY: up-prod
-up-prod: generate-override
+ifdef prod
+	@echo "Starting in production mode (all services, detached)..."
 	docker compose --profile prod up -d
+else ifdef dev
+	@echo "Starting in dev mode (foreground)..."
+	docker compose $(PROFILES) up
+else
+	@echo "Starting in detached mode..."
+	docker compose $(PROFILES) up -d
+endif
 
 .PHONY: down
 down:
@@ -54,7 +52,7 @@ down:
 
 .PHONY: restart
 restart: generate-override
-	docker compose restart
+	docker compose $(PROFILES) restart
 
 .PHONY: logs
 logs:
@@ -81,18 +79,20 @@ help:
 	@echo "Frappe Docker Commands:"
 	@echo ""
 	@echo "Start/Stop:"
-	@echo "  make up           - Dev mode (web-app only)"
-	@echo "  make up-workers   - With background workers + scheduler"
-	@echo "  make up-socketio  - With socketio"
-	@echo "  make up-prod      - Production (all services)"
-	@echo "  make down         - Stop all containers"
-	@echo "  make restart      - Restart containers"
+	@echo "  make up                  - Start (detached)"
+	@echo "  make up dev=1            - Dev mode (with logs)"
+	@echo "  make up workers=1        - Include workers + scheduler"
+	@echo "  make up socketio=1       - Include socketio"
+	@echo "  make up prod=1           - Production (all services)"
+	@echo "  make up dev=1 workers=1  - Dev with workers"
+	@echo "  make down                - Stop all containers"
+	@echo "  make restart             - Restart containers"
 	@echo ""
 	@echo "Utilities:"
-	@echo "  make logs         - Follow web-app logs"
-	@echo "  make shell        - Open bash in web-app"
-	@echo "  make bench CMD='' - Run bench command"
-	@echo "  make list-apps    - Show apps"
+	@echo "  make logs                - Follow web-app logs"
+	@echo "  make shell               - Open bash in web-app"
+	@echo "  make bench CMD='...'     - Run bench command"
+	@echo "  make list-apps           - Show apps"
 	@echo ""
 	@echo "To add a new app:"
 	@echo "  1. Clone/create app in ./apps/"

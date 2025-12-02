@@ -9,7 +9,29 @@ install(){
             fi
         fi
     done
+}
 
+# Fix DB permissions to allow connections from any container (workers, etc.)
+fix_db_permissions(){
+    for site_dir in ./sites/*/; do
+        site=$(basename "$site_dir")
+        config_file="./sites/${site}/site_config.json"
+
+        # Skip non-site directories
+        if [ ! -f "$config_file" ]; then
+            continue
+        fi
+
+        db_name=$(grep -o '"db_name": "[^"]*' "$config_file" | cut -d'"' -f4)
+        db_user=$(grep -o '"db_user": "[^"]*' "$config_file" | cut -d'"' -f4)
+        db_pass=$(grep -o '"db_password": "[^"]*' "$config_file" | cut -d'"' -f4)
+
+        if [ -n "$db_name" ] && [ -n "$db_user" ]; then
+            echo "Fixing DB permissions for site: $site"
+            mysql -h db -uroot -proot -e \
+                "GRANT ALL PRIVILEGES ON \`${db_name}\`.* TO '${db_user}'@'%' IDENTIFIED BY '${db_pass}'; FLUSH PRIVILEGES;" 2>/dev/null || true
+        fi
+    done
 }
 
 dev(){
@@ -23,7 +45,8 @@ dev(){
 
 EOF
     bench setup requirements
-    install;
+    install
+    fix_db_permissions
     bench start
 }
 
@@ -48,6 +71,7 @@ EOF
 
 build(){
     install
+    fix_db_permissions
     if [ "$assets" = true ]; then
         echo "Building assets....."
         bench build --hard-link;
@@ -63,5 +87,7 @@ main(){
     fi
 }
 
-
-main "$@"
+# Only run main if script is executed directly, not sourced
+if [ "${0##*/}" = "run.sh" ] || [ "$1" = "run" ]; then
+    main "$@"
+fi

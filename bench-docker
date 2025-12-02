@@ -1,0 +1,107 @@
+#!/bin/bash
+# Frappe Docker CLI wrapper
+# Usage: ./bench-docker up --dev --workers --socketio
+#        ./bench-docker down
+#        ./bench-docker logs
+#        ./bench-docker shell
+#        ./bench-docker bench migrate
+
+set -e
+
+COMMAND="${1:-help}"
+shift || true
+
+# Parse flags
+DEV=""
+WORKERS=""
+SOCKETIO=""
+PROD=""
+
+for arg in "$@"; do
+    case $arg in
+        --dev)      DEV=1 ;;
+        --workers)  WORKERS=1 ;;
+        --socketio) SOCKETIO=1 ;;
+        --prod)     PROD=1 ;;
+        *)          EXTRA_ARGS="$EXTRA_ARGS $arg" ;;
+    esac
+done
+
+case $COMMAND in
+    up)
+        make up dev=$DEV workers=$WORKERS socketio=$SOCKETIO prod=$PROD
+        ;;
+    down)
+        make down
+        ;;
+    restart)
+        make restart workers=$WORKERS socketio=$SOCKETIO
+        ;;
+    logs)
+        make logs
+        ;;
+    shell)
+        make shell
+        ;;
+    bench)
+        make bench CMD="$EXTRA_ARGS"
+        ;;
+    list-apps)
+        make list-apps
+        ;;
+    fix-db-permissions)
+        # Fix DB permissions so workers can connect
+        # Reads site_config.json and grants access from any host
+        SITE="${EXTRA_ARGS:-site1.local}"
+        SITE=$(echo "$SITE" | xargs)  # trim whitespace
+        CONFIG_FILE="./sites/${SITE}/site_config.json"
+
+        if [ ! -f "$CONFIG_FILE" ]; then
+            echo "Error: Site config not found at $CONFIG_FILE"
+            exit 1
+        fi
+
+        DB_NAME=$(grep -o '"db_name": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+        DB_USER=$(grep -o '"db_user": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+        DB_PASS=$(grep -o '"db_password": "[^"]*' "$CONFIG_FILE" | cut -d'"' -f4)
+
+        echo "Fixing DB permissions for site: $SITE"
+        echo "  DB: $DB_NAME, User: $DB_USER"
+
+        docker compose exec db mariadb -h 127.0.0.1 -uroot -proot -e \
+            "GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASS}'; FLUSH PRIVILEGES;"
+
+        echo "Done! Workers should now be able to connect."
+        ;;
+    help|--help|-h)
+        echo "Frappe Docker CLI"
+        echo ""
+        echo "Usage: ./bench-docker <command> [options]"
+        echo ""
+        echo "Commands:"
+        echo "  up [options]     Start containers"
+        echo "    --dev          Dev mode (foreground with logs)"
+        echo "    --workers      Include workers + scheduler"
+        echo "    --socketio     Include socketio"
+        echo "    --prod         Production (all services)"
+        echo ""
+        echo "  down             Stop all containers"
+        echo "  restart          Restart containers"
+        echo "  logs             Follow web-app logs"
+        echo "  shell            Open bash in web-app"
+        echo "  bench <cmd>      Run bench command"
+        echo "  list-apps        Show apps"
+        echo "  fix-db-permissions [site]  Fix DB access for workers"
+        echo ""
+        echo "Examples:"
+        echo "  ./bench-docker up --dev"
+        echo "  ./bench-docker up --dev --workers"
+        echo "  ./bench-docker up --prod"
+        echo "  ./bench-docker bench migrate"
+        ;;
+    *)
+        echo "Unknown command: $COMMAND"
+        echo "Run './bench-docker help' for usage"
+        exit 1
+        ;;
+esac
