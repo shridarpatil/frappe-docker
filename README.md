@@ -58,7 +58,17 @@ Use `./bench-docker` to manage containers:
 
 No need to edit `docker-compose.yml` - apps are auto-discovered!
 
-1. Clone/create your app in `./apps/` folder:
+### Create a new app
+
+```bash
+./bench-docker new-app my_custom_app
+./bench-docker up --dev
+./bench-docker bench --site site1.local install-app my_custom_app
+```
+
+### Clone an existing app
+
+1. Clone your app in `./apps/` folder:
    ```bash
    cd apps
    git clone https://github.com/your/app.git my_app
@@ -69,15 +79,10 @@ No need to edit `docker-compose.yml` - apps are auto-discovered!
    echo "my_app" >> sites/apps.txt
    ```
 
-3. Restart:
+3. Restart and install:
    ```bash
    ./bench-docker up --dev
-   ```
-
-4. Install app on your site:
-   ```bash
-   ./bench-docker shell
-   bench --site site1.local install-app my_app
+   ./bench-docker bench --site site1.local install-app my_app
    ```
 
 ## Services

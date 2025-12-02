@@ -52,6 +52,43 @@ case $COMMAND in
     list-apps)
         make list-apps
         ;;
+    new-app)
+        APP_NAME=$(echo "$EXTRA_ARGS" | xargs)
+
+        if [ -z "$APP_NAME" ]; then
+            echo "Error: App name is required"
+            echo "Usage: ./bench-docker new-app <app_name>"
+            exit 1
+        fi
+
+        if [ -d "./apps/$APP_NAME" ]; then
+            echo "Error: App '$APP_NAME' already exists in ./apps/"
+            exit 1
+        fi
+
+        echo "Creating new app: $APP_NAME"
+
+        # Create app inside container
+        docker compose exec web-app bench new-app "$APP_NAME"
+
+        # Copy app from container to host
+        echo "Copying app to host ./apps/$APP_NAME..."
+        docker compose cp web-app:/home/frappe/frappe-bench/apps/"$APP_NAME" ./apps/
+
+        # Add to apps.txt if not already there
+        if ! grep -q "^${APP_NAME}$" ./sites/apps.txt 2>/dev/null; then
+            echo "$APP_NAME" >> ./sites/apps.txt
+            echo "Added $APP_NAME to sites/apps.txt"
+        fi
+
+        # Regenerate override file
+        make generate-override
+
+        echo ""
+        echo "App '$APP_NAME' created successfully!"
+        echo "Restart to load the new app: ./bench-docker up --dev"
+        echo "Then install on site: ./bench-docker bench --site site1.local install-app $APP_NAME"
+        ;;
     fix-db-permissions)
         # Fix DB permissions so workers can connect
         # Reads site_config.json and grants access from any host
@@ -101,6 +138,7 @@ case $COMMAND in
         echo "  logs             Follow web-app logs"
         echo "  shell            Open bash in web-app"
         echo "  bench <cmd>      Run bench command"
+        echo "  new-app <name>   Create a new Frappe app"
         echo "  list-apps        Show apps"
         echo "  fix-db-permissions [site]  Fix DB access for workers"
         echo ""
@@ -109,6 +147,7 @@ case $COMMAND in
         echo "  ./bench-docker up --dev --workers"
         echo "  ./bench-docker up --dev --postgres"
         echo "  ./bench-docker up --prod"
+        echo "  ./bench-docker new-app my_custom_app"
         echo "  ./bench-docker bench migrate"
         ;;
     *)
