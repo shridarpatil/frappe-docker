@@ -21,15 +21,24 @@ endif
 .PHONY: generate-override
 generate-override:
 	@echo "services:" > $(OVERRIDE_FILE)
-	@for service in $(SERVICES); do \
+	@apps=$$(find $(APPS_DIR) -maxdepth 1 -mindepth 1 -type d 2>/dev/null | xargs -r -n1 basename); \
+	for service in $(SERVICES); do \
 		echo "  $$service:" >> $(OVERRIDE_FILE); \
 		echo "    volumes:" >> $(OVERRIDE_FILE); \
-		for app in $$(ls -d $(APPS_DIR)/*/ 2>/dev/null | xargs -n1 basename); do \
-			echo "      - ./apps/$$app:/home/frappe/frappe-bench/apps/$$app" >> $(OVERRIDE_FILE); \
-		done; \
+		if [ -n "$$apps" ]; then \
+			for app in $$apps; do \
+				echo "      - ./apps/$$app:/home/frappe/frappe-bench/apps/$$app" >> $(OVERRIDE_FILE); \
+			done; \
+		else \
+			echo "      []" >> $(OVERRIDE_FILE); \
+		fi; \
 		echo "" >> $(OVERRIDE_FILE); \
-	done
-	@echo "Generated $(OVERRIDE_FILE) with apps: $$(ls -d $(APPS_DIR)/*/ 2>/dev/null | xargs -n1 basename | tr '\n' ' ')"
+	done; \
+	if [ -n "$$apps" ]; then \
+		echo "Generated $(OVERRIDE_FILE) with apps: $$apps"; \
+	else \
+		echo "Generated $(OVERRIDE_FILE) with no apps"; \
+	fi
 
 # Development mode (with logs in foreground)
 # Usage: make up dev=1 [workers=1] [socketio=1]
