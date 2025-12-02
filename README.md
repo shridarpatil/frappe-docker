@@ -22,6 +22,7 @@ docker pull shridh0r/frappe:develop
 # Create a new site
 ./bench-docker shell
 bench new-site site1.local --force --db-root-password root
+bench build
 ```
 
 ## CLI Usage
