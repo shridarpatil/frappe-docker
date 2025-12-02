@@ -2,16 +2,11 @@ data/*
 apps/*
 !apps/README.md
 *.build
-sites/assets/*
-!sites/assets/README.md
-*/private/*
-*/public/*
-*/logs/*
-!*/logs/README.md
-*log*
 docker-compose.override.yml
-sites/site1.local/indexes
-sites/site1.local/locks
-sites/site1.local/private
-sites/site1.local/public
+*log*
+
+# Sites folder - only keep common_site_config.json and Procfile
+sites/*
+!sites/common_site_config.json
+!sites/Procfile
 
