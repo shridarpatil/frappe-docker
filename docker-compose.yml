@@ -12,13 +12,17 @@ services:
         deploy:
           replicas: 1
         ports:
-          - "8005:8000"
+          - "8005-8010:8000"
+
+        # ports:
+        #     - "8005:8000"
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
           - ./sites/Procfile:/home/frappe/frappe-bench/Procfile
           - ./run.sh:/home/frappe/frappe-bench/run.sh
-            # - ./sites/assets/frappe/:/home/frappe/frappe-bench/apps/frappe/frappe/public/
+          # App volumes are auto-generated in docker-compose.override.yml
+          # Run 'make up' instead of 'docker-compose up'
         depends_on:
           - redis
           - db
@@ -31,6 +35,7 @@ services:
 
     default-worker:
         image: shridh0r/frappe:develop
+        profiles: ["workers", "prod"]
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -41,6 +46,7 @@ services:
 
     long-worker:
         image: shridh0r/frappe:develop
+        profiles: ["workers", "prod"]
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -51,6 +57,7 @@ services:
 
     short-worker:
         image: shridh0r/frappe:develop
+        profiles: ["workers", "prod"]
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -61,6 +68,7 @@ services:
 
     scheduler:
         image: shridh0r/frappe:develop
+        profiles: ["workers", "prod"]
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -71,6 +79,7 @@ services:
 
     socketio:
         image: shridh0r/frappe:develop
+        profiles: ["socketio", "prod"]
         restart: unless-stopped
         ports:
             - "9000:9000"

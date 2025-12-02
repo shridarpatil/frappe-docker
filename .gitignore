@@ -9,3 +9,9 @@ sites/assets/*
 */logs/*
 !*/logs/README.md
 *log*
+docker-compose.override.yml
+sites/site1.local/indexes
+sites/site1.local/locks
+sites/site1.local/private
+sites/site1.local/public
+
