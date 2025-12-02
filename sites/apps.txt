@@ -1,1 +1,3 @@
 frappe
+frappe_sharding
+frappe_whatsapp

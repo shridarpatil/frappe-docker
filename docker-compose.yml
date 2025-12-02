@@ -1,16 +1,18 @@
-version: '3.8'
+# version: '3.8'
 
 services:
-    buid-app:
-      image: shridh0r/frappe:develop
-      build:
-        context: .
-        dockerfile: ./Dockerfile
+    # buid-app:
+    #   image: shridh0r/frappe:develop
+    #   build:
+    #     context: .
+    #     dockerfile: ./Dockerfile
 
     web-app:
         image: shridh0r/frappe:develop
+        deploy:
+          replicas: 1
         ports:
-            - "8005:8000"
+          - "8005:8000"
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -79,30 +81,31 @@ services:
           - web-app
 
     redis:
-        image: "redis:5.0.5-alpine"
+        image: "redis:7"
         ports:
           - 6379
         volumes:
           - ./data/redis:/data
 
-    db:
-        image: "postgres:14.10"
-        ports:
-          - 5432
-        volumes:
-          - ./data/postgres:/var/lib/postgresql/data
-        environment:
-          - POSTGRES_PASSWORD=root
-
     # db:
-    #     image: "wangxian/alpine-mysql"
+    #     image: "postgres:14.10"
     #     ports:
-    #       - 3306
-    #     environment:
-    #       - MYSQL_ROOT_PASSWORD=root
+    #       - 5432
     #     volumes:
-    #       - ./data/mysql:/app
-    #       - ./my.cnf:/etc/mysql/my.cnf
+    #       - ./data/postgres:/var/lib/postgresql/data
+    #     environment:
+    #       - POSTGRES_PASSWORD=root
+
+    db:
+        # image: "wangxian/alpine-mysql"
+        image: "mariadb:12"
+        ports:
+          - 3306
+        environment:
+          - MYSQL_ROOT_PASSWORD=root
+        volumes:
+          - ./data/mysql:/var/lib/mysql
+          - ./new.cnf:/etc/mysql/my.cnf
 
     nginx:
         image: nginx

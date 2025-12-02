@@ -2,6 +2,7 @@
  "auto_update": false,
  "background_workers": 1,
  "db_host": "db",
+ "default_site": "site1.local",
  "file_watcher_port": 6787,
  "frappe_user": "frappe",
  "gunicorn_workers": 8,
