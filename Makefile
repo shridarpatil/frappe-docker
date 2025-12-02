@@ -9,7 +9,11 @@ OVERRIDE_FILE := docker-compose.override.yml
 SERVICES := web-app default-worker long-worker short-worker scheduler socketio
 
 # Database selection (default: mariadb)
-DB ?= mariadb
+# Support both DB and db (case-insensitive)
+DB ?= $(db)
+ifeq ($(DB),)
+	DB = mariadb
+endif
 PROFILES := --profile $(DB)
 
 ifdef workers
