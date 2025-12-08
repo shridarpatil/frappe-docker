@@ -12,10 +12,7 @@ services:
         deploy:
           replicas: 1
         ports:
-          - "8005-8010:8000"
-
-        # ports:
-        #     - "8005:8000"
+          - "8000:8000"
         restart: unless-stopped
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
@@ -117,6 +114,8 @@ services:
         restart: unless-stopped
         ports:
             - "9000:9000"
+        extra_hosts:
+          - "localhost:host-gateway"
         volumes:
           - ./sites:/home/frappe/frappe-bench/sites
           - ./run.sh:/home/frappe/frappe-bench/run.sh
@@ -165,8 +164,10 @@ services:
         ports:
           - "80:80"
         volumes:
-            - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-            - ./sites/assets:/home/assets
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+            - ./sites:/home/frappe/frappe-bench/sites
+        volumes_from:
+          - web-app:ro
         depends_on:
           - web-app
 

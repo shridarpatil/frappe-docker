@@ -6,6 +6,11 @@ install(){
             echo "Installing app: $line"
             if [ -d "./apps/${line}" ]; then
                 ./env/bin/pip install -e  ./apps/$line
+                # Install requirements.txt if it exists
+                if [ -f "./apps/${line}/requirements.txt" ]; then
+                    echo "Installing requirements for: $line"
+                    ./env/bin/pip install -r ./apps/${line}/requirements.txt
+                fi
             fi
         fi
     done
